@@ -1,5 +1,4 @@
 
-
 export default function SwitchBoard({ userAuth,}){
     return(
         <main className="flex justify-center py-3">

@@ -1,8 +1,8 @@
 import SwitchBoard from "./switch-board";
 import AddItem from "./addItem";
-import { Login } from "./loginPage";
+import Login from "./Login";
 
-export default function HomePage() {
+export default function Page() {
   return (
     <Login/>
     // <SwitchBoard />
