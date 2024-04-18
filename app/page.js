@@ -1,7 +1,6 @@
-import HomePage from "./components/Page";
-
+import Login from "./components/Page";
 export default function Page(){
   return(
-    <HomePage/>
+    <Login/>
   );
 }

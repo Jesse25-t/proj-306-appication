@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { addItem, getItems, deleteItem } from "../_services/list-services";
 import Footer from "./footer";
 import Link from "next/link";
 
@@ -21,7 +22,7 @@ const Card = ({ name, description, onRemove }) => {
   );
 };
 
-export function AddItem() {
+export function AddItem({user}) {
   const [activityTitle, setActivityTitle] = useState("");
   const [description, setDescription] = useState("");
   const [list, setList] = useState([]);
@@ -32,15 +33,20 @@ export function AddItem() {
     setList(newList);
   };
 
+  const handleAddItem = async (newItem) => {
+    if (user) {
+      const newItemId = await addItem(user.uid, newItem);
+      setList((prevItems) => [...prevItems, { ...newItem, id: newItemId }]);
+    }else{console.log("me its me")}
+  };
+
   const handleForm = (event) => {
     event.preventDefault();
-    setList([
-      ...list,
-      {
-        name: activityTitle,
-        description: description,
-      },
-    ]);
+    const newItem = {
+      name: activityTitle,
+      description: description,
+    }
+    handleAddItem(newItem);
     setActivityTitle("");
     setDescription("");
   };
@@ -49,6 +55,7 @@ export function AddItem() {
     setList([]);
   };
 
+  console.log(list);
   return (
     <main className="flex justify-center flex-col font-mono p-4">
       <p className="text-3xl text-black text-center p-3">Make Your To Do</p>
@@ -105,7 +112,7 @@ export function AddItem() {
       </div>
       <div className="flex flex-col items-center h-screen">
         <Link
-          href="\components\screens"
+          href="/"
           className="bg-gray-800 text-blue-500 hover:text-blue-700 py-2 px-4 rounded-lg"
         >
           Home Page
