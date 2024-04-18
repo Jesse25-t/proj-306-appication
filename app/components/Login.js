@@ -10,8 +10,9 @@ const authentication = async () => {
 };
 
 // Use the useUserAuth hook to get the user object and the login and logout functions
-const { user, gitHubSignIn, firebaseSignOut } = useUserAuth();
+// const { user, gitHubSignIn, firebaseSignOut } = useUserAuth();
 export default function Login() {
+  const [isLoggedIn, setIsLoggedIn] = useState();
   return (
     <p>
       Welcome, {user.displayName} ({user.email})
