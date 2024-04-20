@@ -1,5 +1,5 @@
 import { db } from "../components/firebase";
-import { collection, getDocs, addDoc, query } from "firebase/firestore";
+import { doc, collection, getDocs, setDoc, query } from "firebase/firestore";
 
 console.log(db);
 export const getItems = async (userId) => {
@@ -7,9 +7,7 @@ export const getItems = async (userId) => {
       const items = [];
       const itemsCollection = collection(db, "users", userId, "items");
       const q = query(itemsCollection);
-  
       const querySnapshot = await getDocs(q);
-  
       querySnapshot.forEach((doc) => {
         items.push({ id: doc.id, ...doc.data() });
       });
@@ -21,8 +19,7 @@ export const getItems = async (userId) => {
 
   export const addItem = async (userId, item) => {
     try {
-      const itemsCollection = collection(db, "users", userId, "items");
-      const docRef = await addDoc(itemsCollection, item);
+      const docRef = await setDoc(doc(db, "users", userId), item);
       return docRef.id;
     } catch (error) {
       console.error("Error in addItem:", error);
@@ -32,9 +29,7 @@ export const getItems = async (userId) => {
 
   export const deleteItem = async (userId, itemId) => {
     try {
-      const itemsCollection = collection(db, "users", userId, "items");
-      const docRef = doc(itemsCollection, itemId);
-      await deleteDoc(docRef);
+      const docRef = await deleteDoc(doc(db, "users", userId), item);
     } catch (error) {
       console.error("Error in deleteItem:", error);
     }

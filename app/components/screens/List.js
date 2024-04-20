@@ -1,8 +1,37 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { addItem, getItems, deleteItem } from "../_services/list-services";
 import Footer from "./footer";
 import Link from "next/link";
+
+// This is a temporary variable for getting list from a block of the code
+let listData = [];
+console.log(listData);
+
+const SavedList = ({ list }) => {
+  const [userSavedList, setUserSavedList] = useState([]);
+  const [listTitle, setListTitle] = useState("");
+  useEffect(() => {
+    setUserSavedList(list);
+    setListTitle(list != null ? list[0]?.activityTitle : "");
+  }, [list]);
+
+  return (
+    <div className="mt-4">
+      <h2 className="text-xl font-semibold mb-2">{listTitle}</h2>
+      <ul className="divide-y divide-gray-200">
+        {userSavedList.map((item, index) => (
+          <li key={index} className="py-2">
+            <p className="text-lg font-semibold">{item.name}</p>
+            <p className="text-gray-500">{item.description}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+export default SavedList;
 
 const Card = ({ name, description, onRemove }) => {
   return (
@@ -22,7 +51,7 @@ const Card = ({ name, description, onRemove }) => {
   );
 };
 
-export function AddItem({user}) {
+export function AddItem({ user }) {
   const [activityTitle, setActivityTitle] = useState("");
   const [description, setDescription] = useState("");
   const [list, setList] = useState([]);
@@ -33,11 +62,18 @@ export function AddItem({user}) {
     setList(newList);
   };
 
-  const handleAddItem = async (newItem) => {
-    if (user) {
-      const newItemId = await addItem(user.uid, newItem);
-      setList((prevItems) => [...prevItems, { ...newItem, id: newItemId }]);
-    }else{console.log("me its me")}
+  // This method will be implemented when firestore system is fixed
+  // const handleAddItem = async (newItem) => {
+  //   if (user) {
+  //     const newItemId = await addItem(user.uid, newItem);
+  //     setList((prevItems) => [...prevItems, { ...newItem, id: newItemId }]);
+  //   } else {
+  //     console.log("error: cannot resolve user");
+  //   }
+  // };
+
+  const handleAddItem = (newItem) => {
+    setList([...list, newItem]);
   };
 
   const handleForm = (event) => {
@@ -45,17 +81,23 @@ export function AddItem({user}) {
     const newItem = {
       name: activityTitle,
       description: description,
-    }
+    };
     handleAddItem(newItem);
     setActivityTitle("");
     setDescription("");
   };
 
-  const handleSaveChanges = () => {
+  const handleSaveChanges = (list) => {
+    if (list.length > 0) {
+      listData = list;
+      console.log(listData);
+      console.log("Your list has been saved");
+    } else {
+      console.log("There was an error saving your list");
+    }
     setList([]);
   };
 
-  console.log(list);
   return (
     <main className="flex justify-center flex-col font-mono p-4">
       <p className="text-3xl text-black text-center p-3">Make Your To Do</p>
@@ -98,16 +140,13 @@ export function AddItem({user}) {
               onRemove={() => handleRemove(index)} // Pass remove function with index
             />
           ))}
-          {!list.length ? (
-            <div className="text-white">Make a plan then save</div>
-          ) : (
-            <button
-              className="bg-blue-500 px-4 py-2 m-2 rounded-full text-white"
-              onClick={handleSaveChanges}
-            >
-              Save
-            </button>
-          )}
+          <button
+            onClick={() => handleSaveChanges(list)}
+            className="bg-blue-500 px-4 py-2 m-2 rounded-full text-white"
+          >
+            {" "}
+            Save{" "}
+          </button>
         </div>
       </div>
       <div className="flex flex-col items-center h-screen">
@@ -124,9 +163,27 @@ export function AddItem({user}) {
 }
 
 export function ViewList() {
-  return <p>please choose</p>;
+  return (
+    <div>
+      <p className="text-3xl text-black text-center p-3">Your List So Far</p>
+      <p>
+        {listData.length < 0 ? (
+          <div>You have to make a list first</div>
+        ) : (
+          <SavedList list={listData} />
+        )}
+      </p>
+      <Link
+        href="/"
+        className="bg-gray-800 text-blue-500 hover:text-blue-700 py-2 px-4 rounded-lg"
+      >
+        Home Page
+      </Link>
+    </div>
+  );
 }
 
+// For this project, at this time the export feature will not be enabled yet. A small paymet process will be required
 export function ExportList() {
-  return <p>please choose</p>;
+  return <p>This Feature is not yet available. Please Try again later</p>;
 }
